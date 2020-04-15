@@ -34,6 +34,9 @@
                 CurrentClass = root.Attributes["name"].Value;
             }
 
+            if (root.Name == "field")
+                accumulatedText = new CodeGeneration.FieldGenerator(root.Attributes).Parse();
+
             if (root.Name == "ctor")
             {
                 //adding a summary by default for the constructor

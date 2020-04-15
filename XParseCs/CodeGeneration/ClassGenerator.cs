@@ -43,7 +43,7 @@ namespace XParseCs.CodeGeneration
 
         public ClassGenerator(Attributes attributes)
         {
-            if (attributes["name"] == null)
+            if (attributes["name"] == null || string.IsNullOrEmpty(attributes["name"].Value))
                 throw new XParseAttributeException("name");
             else
                 name = attributes["name"].Value;

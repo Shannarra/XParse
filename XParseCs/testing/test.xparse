@@ -8,8 +8,8 @@
       <ref name="System.Linq" />    
       <ref name="System.Xml.XmlDocument" alias="true" aliasName="Doc" />    
     </dependencies>
-    <class name="MyClass" protection="public" isPartial="false" isUnsafe="false" summary="Just a test class summary" inherits="Doc, IEnumerable">
-      <field protection="public" name="MyProp" type="int" get="public" set="private"/> 
+    <class name="MyClass" isUnsafe="false" summary="Just a test class summary" inherits="Doc, IEnumerable">
+      <field protection="public" name="MyProp" type="int" get="public" set="private" isVolatile="true" additional="static,readonly"/> 
       <ctor/>
       <method protection="public" type="int" name="SayHi" summary="Prints 'HI' to the console."/>
     </class>

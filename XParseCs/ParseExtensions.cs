@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
-
-namespace XParseCs
+﻿namespace XParseCs
 {
     static class ParseExtensions
     {
@@ -24,16 +21,13 @@ namespace XParseCs
                 accumulatedText = $"{TAB}#endregion Dependencies";
 
             if (root.Name == "ref")
-                if (root.Attributes["name"] != null)
-                    if (root.Attributes["alias"] != null) // it's alias 'using'
-                        if (root.Attributes["aliasName"] == null) //we are using alias with no provided name, so throw an exception
-                            throw new XParseException($"The alias to {root.Attributes["name"]} was NOT given a name!");
-                        else //valid alias
-                            accumulatedText = new CodeGeneration.DepedenciesGenerator(root.Attributes["name"].Value, root.Attributes["aliasName"].Value).Parse();
-                    else // no alias
-                        accumulatedText = new CodeGeneration.DepedenciesGenerator(root.Attributes["name"].Value, null).Parse();
-                else //we're given a "using" with no name
-                    throw new XParseException("The given \"using\" has no name!");
+                accumulatedText = new CodeGeneration.DepedenciesGenerator(
+                    root.Attributes["name"],
+                    root.Attributes["alias"],
+                    root.Attributes["aliasName"]).Parse();
+
+            if (root.Name == "class")
+                accumulatedText = new CodeGeneration.ClassGenerator(root.Attributes).Parse();
 
 
             lastNodeVisited = root.Name;

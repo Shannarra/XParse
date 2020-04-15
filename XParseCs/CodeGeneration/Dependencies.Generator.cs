@@ -1,15 +1,25 @@
-﻿namespace XParseCs.CodeGeneration
+﻿using Attribute = System.Xml.XmlAttribute;
+
+namespace XParseCs.CodeGeneration
 {
     class DepedenciesGenerator: ICodeGenerator
     {
-        private string dependencyName;
+        private readonly string dependencyName;
 
-        private string? aliasName;
+        private readonly string? aliasName;
 
-        public DepedenciesGenerator(string dependency, string? alias)
+        public DepedenciesGenerator(Attribute dependency, Attribute hasAlias, Attribute alias)
         {
-            this.dependencyName = dependency;
-            this.aliasName = alias;
+            if (dependency == null)
+                throw new XParseException("Empty dependency given!");
+            else
+                dependencyName = dependency.Value;
+
+            if (hasAlias != null && hasAlias.Value.ToLower() == "true")
+                if (alias != null && !string.IsNullOrEmpty(alias.Value))
+                    this.aliasName = alias.Value;
+                else
+                    throw new XParseException("The system was not given an alias name!");
         }
 
         public string Parse()

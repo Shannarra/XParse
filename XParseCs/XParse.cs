@@ -15,9 +15,10 @@ namespace XParseCs
 
         public static string TAB = "\t";
 
+#nullable enable
         public static void Main(string[]? args)
         {
-            if (args.Length == 0 || args == null)
+            if (args == null || args.Length == 0)
             {
                 document = new XmlDocument();
 
@@ -94,6 +95,18 @@ namespace XParseCs
         public XParseException(string message) : base(message) { }
         public XParseException(string message, Exception inner) : base(message, inner) { }
         protected XParseException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+    }
+
+
+    [Serializable]
+    public class XParseAttributeException : Exception
+    {
+        public XParseAttributeException() { }
+        public XParseAttributeException(string attributeName) : base($"The value of the attribute \"{attributeName}\" is null or invalid.") { }
+        public XParseAttributeException(string message, Exception inner) : base(message, inner) { }
+        protected XParseAttributeException(
           System.Runtime.Serialization.SerializationInfo info,
           System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }

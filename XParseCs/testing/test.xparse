@@ -10,7 +10,7 @@
       <ref name="System.Xml.XmlDocument" alias="true" aliasName="Doc" />    
     </dependencies>
     <class name="MyClass" isUnsafe="false" summary="Just a test class summary" inherits="Doc, IEnumerable">
-      <field protection="public" name="MyProp" type="int" additional="static" summary="This is my static property"/> 
+      <property protection="public" name="MyProp" type="int" additional="static" summary="This is my static property"/> 
       <ctor/>
       <method name="SayHi" protection="public" type="int" summary="Prints 'HI' to the console." inheritsAs="virtual" params=""> <![CDATA[ Console.WriteLine("hi"); return 0;]]> </method>
       <method name="GreetMe" protection="public" summary="Prints a greeting to the console." additional="static" params=""> <![CDATA[ Console.WriteLine("hello there");]]> </method>

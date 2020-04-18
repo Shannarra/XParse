@@ -2,26 +2,45 @@
 
 namespace XParseCs.CodeGeneration
 {
-    class FieldGenerator : ICodeGenerator
+    class PropertyGenerator : ICodeGenerator
     {
-
+        /// <summary>
+        /// The property's name.
+        /// </summary>
         readonly string name;
 
+#nullable enable
+        /// <summary>
+        /// The protection level
+        /// </summary>
         readonly string? protectonLevel;
 
+        /// <summary>
+        /// The return type of the property.
+        /// </summary>
         readonly string? type;
 
+        /// <summary>
+        /// The 'get' protection level of the property.
+        /// </summary>
         readonly string? get;
 
+        /// <summary>
+        /// The 'set' protection level of the property.
+        /// </summary>
         readonly string? set;
 
-        readonly bool? isVolatile;
-
+        /// <summary>
+        /// Additional modifiers, such as 'unsafe' or 'static';
+        /// </summary>
         readonly string[]? additional;
 
-        readonly string summary;
+        /// <summary>
+        /// A summary for the property.
+        /// </summary>
+        readonly string? summary;
 
-        public FieldGenerator(Attributes attributes)
+        public PropertyGenerator(Attributes attributes)
         {
             if (attributes["name"] == null || string.IsNullOrEmpty(attributes["name"].Value))
                 throw new XParseAttributeException("name");
@@ -40,9 +59,6 @@ namespace XParseCs.CodeGeneration
             if (attributes["set"] != null)
                 set = attributes["set"].Value;
 
-            if (attributes["isVolatile"] != null)
-                isVolatile = attributes["isVolatile"].Value.ToLower() == "true";
-
             if (attributes["additional"] != null)
                 additional = attributes["additional"].Value.Contains(',')
                     ? attributes["additional"].Value.Split(',', System.StringSplitOptions.RemoveEmptyEntries)
@@ -57,8 +73,7 @@ namespace XParseCs.CodeGeneration
                 $"{(summary == null ? string.Empty : $"\t///<summary>\n\t\t/// {summary}\n\t\t///</summary>\n\t\t")}" +
                 $"{(protectonLevel == null ? string.Empty : protectonLevel + " ")}" +
                 $"{(additional == null ? string.Empty : additional.Reduce() + " ")}" +
-                $"{(isVolatile == null ? string.Empty : isVolatile.Value ? "volatile " : string.Empty)}" +
                 $"{(type == null ? "void " : type + " ")}" +
-                $"{name} " + " { " + $"{(get ?? string.Empty)} get; " + $"{(set ?? string.Empty)}" + " set; }";
+                $"{name} " + "{" + $"{(get == null ? " " : $" {get} ")}get; " + $"{(set == null ? string.Empty : set + " ")}" + "set; }";
     }
 }

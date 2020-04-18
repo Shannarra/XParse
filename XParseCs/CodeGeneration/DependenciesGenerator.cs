@@ -2,11 +2,22 @@
 
 namespace XParseCs.CodeGeneration
 {
+    /// <summary>
+    /// Generates a 'using XYZ;' dependency in a specified region.
+    /// </summary>
     class DepedenciesGenerator: ICodeGenerator
     {
+        /// <summary>
+        /// The namespace we depend on.
+        /// </summary>
         private readonly string dependencyName;
 
+#nullable enable
+        /// <summary>
+        /// The alias name, if one exists.
+        /// </summary>
         private readonly string? aliasName;
+#nullable disable
 
         public DepedenciesGenerator(Attribute dependency, Attribute hasAlias, Attribute alias)
         {

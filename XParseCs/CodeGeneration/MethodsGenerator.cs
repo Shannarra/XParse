@@ -2,24 +2,58 @@
 
 namespace XParseCs.CodeGeneration
 {
+    /// <summary>
+    /// Generates a method by a set of given parameters.
+    /// </summary>
     class MethodsGenerator : ICodeGenerator
     {
+        /// <summary>
+        /// The method's name.
+        /// </summary>
         readonly string name;
 
+#nullable enable
+        /// <summary>
+        /// The protection level of the method.
+        /// </summary>
         readonly string? protection;
 
+        /// <summary>
+        /// The method's return type;
+        /// </summary>
         readonly string? type;
 
+        /// <summary>
+        /// A summary for that method.
+        /// </summary>
         readonly string? summary;
 
+        /// <summary>
+        /// If the method is inherited from a parent class. 
+        /// POSSIBLE VALUES ARE ONLY: virtual or override.
+        /// </summary>
         readonly string? inheritsAs;
 
+        /// <summary>
+        /// Any additional modifiers, such as <see cref="unsafe"/>
+        /// </summary>
         readonly string[]? additional;
 
+        /// <summary>
+        /// The parameters list for that method.
+        /// </summary>
         readonly string[]? parameters;
 
+        /// <summary>
+        /// The method's CDATA tag. ALL contents of the CDATA will be passed as the body of the method.
+        /// </summary>
         readonly string[]? cdata;
-
+        
+        /// <summary>
+        /// Sets the class variables and throws exceptions if needed.
+        /// </summary>
+        /// <param name="attributes">The <see cref="Attributes"/> of the method tag.</param>
+        /// <exception cref="XParseAttributeException">Throws if the required name is missing.</exception>
         public MethodsGenerator(Attributes attributes)
         {
             if (attributes["name"] == null || string.IsNullOrEmpty(attributes["name"].Value))
@@ -37,7 +71,7 @@ namespace XParseCs.CodeGeneration
                 summary = attributes["summary"].Value;
 
             if (attributes["inheritsAs"] != null)
-                if (attributes["inheritsAs"].Value.ToLower() != "abstract" &&
+                if (attributes["inheritsAs"].Value.ToLower() != "override" &&
                     attributes["inheritsAs"].Value.ToLower() != "virtual")
                     throw new XParseException("Attribute \"inheritsAs\" was given unacceptable value!");
                 else
@@ -54,6 +88,11 @@ namespace XParseCs.CodeGeneration
                     : new string[] { attributes["params"].Value };
         }
 
+        /// <summary>
+        /// Additional constructor.
+        /// </summary>
+        /// <param name="attributes">The <see cref="Attributes"/> passed to the method.</param>
+        /// <param name="firstChild">Basically where the CDATA tag lives.</param>
         public MethodsGenerator(Attributes attributes, System.Xml.XmlNode firstChild)
             : this(attributes)
         {

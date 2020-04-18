@@ -1,13 +1,28 @@
 ﻿namespace XParseCs
 {
+    /// <summary>
+    /// Container for some class extensions and the "trigger" for parsing the given file. 
+    /// </summary>
     static class ParseExtensions
     {
+        /// <summary>
+        /// The last visited <see cref="System.Xml.XmlNode"/>.
+        /// </summary>
         private static string lastNodeVisited;
 
         public static readonly string TAB = "\t";
 
+        /// <summary>
+        /// The currently visited class.
+        /// </summary>
         public static string CurrentClass;
 
+#nullable enable
+        /// <summary>
+        /// Acts like a "trigger" by running the parser in linear time.
+        /// </summary>
+        /// <param name="root">The root to parse.</param>
+        /// <returns>The text accumulated throughout the parsing stage.</returns>
         public static string? ParseTrigger(System.Xml.XmlNode root)
         {
             string accumulatedText = "";
@@ -34,8 +49,8 @@
                 CurrentClass = root.Attributes["name"].Value;
             }
 
-            if (root.Name == "field")
-                accumulatedText = new CodeGeneration.FieldGenerator(root.Attributes).Parse();
+            if (root.Name == "property")
+                accumulatedText = new CodeGeneration.PropertyGenerator(root.Attributes).Parse();
 
             if (root.Name == "ctor")
             {
@@ -59,6 +74,12 @@
             return accumulatedText;
         }
 
+        /// <summary>
+        /// Acts like the JS' Array.reduce() method + a given join string.
+        /// </summary>
+        /// <param name="arr">The array to reduce.</param>
+        /// <param name="join">The join character.</param>
+        /// <returns>The reduced value.</returns>
         public static string Reduce(this string[] arr, char join = ' ')
         {
             string str = "";

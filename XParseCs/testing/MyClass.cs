@@ -16,7 +16,7 @@ namespace TestNamespace
 		///<summary>
 		/// This is my static property
 		///</summary>
-		public static int MyProp  {  get;  set; }
+		public static int MyProp { get; set; }
 	
 		///<summary>
 		/// Creates a new MyClass object

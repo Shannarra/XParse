@@ -23,6 +23,11 @@ namespace TestNamespace
 		public static int MyProp { get; set; }
 	
 		///<summary>
+		/// This is my accessor property
+		///</summary>
+		public uint MyAge { get => myAge; set => myAge = value; }
+	
+		///<summary>
 		/// Creates a new MyClass object
 		///</summarry>
 		MyClass()

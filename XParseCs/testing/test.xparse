@@ -13,6 +13,7 @@
       <field protection="private" type="string" name="myName" value="Shannarra"/>
       <field protection="private" type="uint" name="myAge" value="69"/>
       <property protection="public" name="MyProp" type="int" additional="static" summary="This is my static property"/> 
+      <property protection="public" name="MyAge" type="uint" summary="This is my accessor property" linkTo="myAge"/> 
       <ctor/>
       <method name="SayHi" protection="public" type="int" summary="Prints 'HI' to the console." inheritsAs="virtual" params=""> <![CDATA[ Console.WriteLine("hi"); return 0;]]> </method>
       <method name="GreetMe" protection="public" summary="Prints a greeting to the console." additional="static" params=""> <![CDATA[ Console.WriteLine("hello there");]]> </method>

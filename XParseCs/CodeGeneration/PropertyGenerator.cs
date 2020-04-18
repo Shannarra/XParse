@@ -40,6 +40,11 @@ namespace XParseCs.CodeGeneration
         /// </summary>
         readonly string? summary;
 
+        /// <summary>
+        /// The variable this property is linked to.
+        /// </summary>
+        readonly string? linkTo;
+
         public PropertyGenerator(Attributes attributes)
         {
             if (attributes["name"] == null || string.IsNullOrEmpty(attributes["name"].Value))
@@ -66,6 +71,9 @@ namespace XParseCs.CodeGeneration
 
             if (attributes["summary"] != null)
                 summary = attributes["summary"].Value;
+
+            if (attributes["linkTo"] != null)
+                linkTo = attributes["linkTo"].Value;
         }
 
         public string Parse()
@@ -74,6 +82,11 @@ namespace XParseCs.CodeGeneration
                 $"{(protectonLevel == null ? string.Empty : protectonLevel + " ")}" +
                 $"{(additional == null ? string.Empty : additional.Reduce() + " ")}" +
                 $"{(type == null ? "void " : type + " ")}" +
-                $"{name} " + "{" + $"{(get == null ? " " : $" {get} ")}get; " + $"{(set == null ? string.Empty : set + " ")}" + "set; }";
+                $"{name} " +
+                "{" + $"{(get == null ? " " : $" {get} ")}get{(linkTo == null ? string.Empty : $" => {linkTo}")};" + //the getter
+                $"{(set == null ? " ": set + " ")}" + $"set{(linkTo == null ? string.Empty : $" => {linkTo} = value")}" + "; }"; //the setter
+
+        string s;
+        public string A { get => s; private set => s = value; }
     }
 }

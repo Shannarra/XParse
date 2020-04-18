@@ -1,15 +1,21 @@
-﻿using System;
-using System.Xml;
-
-namespace XParseCs
+﻿namespace XParseCs
 {
     class XParse
     {
-        private string codeRoot;
+        /// <summary>
+        /// The specified argument codeRoot="" in the file. The starting point of the program.
+        /// </summary>
+        private readonly string codeRoot;
+        
+        /// <summary>
+        /// The given .xparse file.
+        /// </summary>
+        private static System.Xml.XmlDocument document;
 
-        private static XmlDocument document;
-
-        private System.Collections.Specialized.StringCollection xmlContent;
+        /// <summary>
+        /// The <see cref="document"/>'s contents.
+        /// </summary>
+        private readonly System.Collections.Specialized.StringCollection xmlContent;
 
         private const string path = @"..\..\..\testing\test.xparse";
 
@@ -20,7 +26,7 @@ namespace XParseCs
         {
             if (args == null || args.Length == 0)
             {
-                document = new XmlDocument();
+                document = new System.Xml.XmlDocument();
 
                 new XParse();
             }
@@ -35,16 +41,16 @@ namespace XParseCs
             }
             catch (System.IO.IOException)
             {
-                Console.WriteLine("File not found.");
+                System.Console.WriteLine("File not found.");
                 Main(null);
             }
             catch (System.UnauthorizedAccessException) 
             {
-                Console.WriteLine("XParse cannot access the given file");
+                System.Console.WriteLine("XParse cannot access the given file");
             }
             catch (System.Xml.XmlException)
             {
-                Console.WriteLine("No XML found in the current file");
+                System.Console.WriteLine("No XML found in the current file");
             }
 
             if (document.GetElementsByTagName("content") == null ||
@@ -52,7 +58,7 @@ namespace XParseCs
                 throw new XParseException("No \"META\" tag found.");
             else
             {
-                XmlNode meta = document.GetElementsByTagName("content")[0].ChildNodes[0];
+                System.Xml.XmlNode meta = document.GetElementsByTagName("content")[0].ChildNodes[0];
                 codeRoot = meta.Attributes["codeRoot"].Value;
 
                 if (document.GetElementsByTagName(codeRoot)[0] == null)
@@ -75,21 +81,25 @@ namespace XParseCs
                     }
                     catch (System.IO.IOException)
                     {
-                        Console.WriteLine("The file to write in is not free at the moment. Please try again.");
+                        System.Console.WriteLine("The file to write in is not free at the moment. Please try again.");
                     }
-
+                    TestNamespace.MyClass.GreetMe(); // let's call our auto-generated code :)
                 }
             }
         }
 
-        public void ParseXml(XmlNode root)
+        /// <summary>
+        /// Recursively parses the given <see cref="document"/> by a given starting <see cref="System.Xml.XmlNode"/> named <paramref name="root"/>
+        /// </summary>
+        /// <param name="root">The code root to start traversing from.</param>
+        public void ParseXml(System.Xml.XmlNode root)
         {
-            if (root is XmlElement)
+            if (root is System.Xml.XmlElement)
             {
                 var result = ParseExtensions.ParseTrigger(root);
 
                 if (result != null && result != string.Empty)
-                    if (!result.StartsWith(TAB) && !result.StartsWith("namespace"))
+                    if (!result.StartsWith(TAB) && !result.StartsWith(codeRoot))
                         xmlContent.Add(TAB + result);
                     else xmlContent.Add(result);
             }
@@ -101,25 +111,29 @@ namespace XParseCs
         }
     }
 
-
-    [Serializable]
-    public class XParseException : Exception
+    /// <summary>
+    /// A generic <see cref="Exception"/> that throws when XParse encounter unexpected use of the XML formated file.
+    /// </summary>
+    [System.Serializable]
+    public class XParseException : System.Exception
     {
         public XParseException() { }
         public XParseException(string message) : base(message) { }
-        public XParseException(string message, Exception inner) : base(message, inner) { }
+        public XParseException(string message, System.Exception inner) : base(message, inner) { }
         protected XParseException(
           System.Runtime.Serialization.SerializationInfo info,
           System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 
-
-    [Serializable]
-    public class XParseAttributeException : Exception
+    /// <summary>
+    /// Special <see cref="Exception"/> that throws when a required XML argument could not be found (is null) or is empty.
+    /// </summary>
+    [System.Serializable]
+    public class XParseAttributeException : System.Exception
     {
         public XParseAttributeException() { }
         public XParseAttributeException(string attributeName) : base($"The value of the attribute \"{attributeName}\" is null or invalid.") { }
-        public XParseAttributeException(string message, Exception inner) : base(message, inner) { }
+        public XParseAttributeException(string message, System.Exception inner) : base(message, inner) { }
         protected XParseAttributeException(
           System.Runtime.Serialization.SerializationInfo info,
           System.Runtime.Serialization.StreamingContext context) : base(info, context) { }

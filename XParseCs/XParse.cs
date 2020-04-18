@@ -55,15 +55,29 @@ namespace XParseCs
                 XmlNode meta = document.GetElementsByTagName("content")[0].ChildNodes[0];
                 codeRoot = meta.Attributes["codeRoot"].Value;
 
-                if (document.GetElementsByTagName(codeRoot) == null)
+                if (document.GetElementsByTagName(codeRoot)[0] == null)
                     throw new XParseException("The meta code root specified is invalid.");
                 else
                 {
                     xmlContent = new System.Collections.Specialized.StringCollection();
                     ParseXml(document.GetElementsByTagName(codeRoot)[0]);
 
-                    foreach (var item in xmlContent)
-                        Console.WriteLine(item);
+                    xmlContent.Add("\n\t}\n}");
+
+                    if (!System.IO.File.Exists(@"..\..\..\testing\MyClass.cs"))
+                        System.IO.File.Create(@"..\..\..\testing\MyClass.cs");
+
+                    try
+                    {
+                        using var writer = new System.IO.StreamWriter(@"..\..\..\testing\MyClass.cs");
+                        foreach (var item in xmlContent)
+                            writer.WriteLine(item);
+                    }
+                    catch (System.IO.IOException)
+                    {
+                        Console.WriteLine("The file to write in is not free at the moment. Please try again.");
+                    }
+
                 }
             }
         }

@@ -19,6 +19,8 @@ namespace XParseCs.CodeGeneration
 
         readonly string[]? additional;
 
+        readonly string summary;
+
         public FieldGenerator(Attributes attributes)
         {
             if (attributes["name"] == null || string.IsNullOrEmpty(attributes["name"].Value))
@@ -45,10 +47,14 @@ namespace XParseCs.CodeGeneration
                 additional = attributes["additional"].Value.Contains(',')
                     ? attributes["additional"].Value.Split(',', System.StringSplitOptions.RemoveEmptyEntries)
                     : new string[] { attributes["additional"].Value };
+
+            if (attributes["summary"] != null)
+                summary = attributes["summary"].Value;
         }
 
         public string Parse()
-            => "\n\t\t" +
+            => "\n\t" +
+                $"{(summary == null ? string.Empty : $"\t///<summary>\n\t\t/// {summary}\n\t\t///</summary>\n\t\t")}" +
                 $"{(protectonLevel == null ? string.Empty : protectonLevel + " ")}" +
                 $"{(additional == null ? string.Empty : additional.Reduce() + " ")}" +
                 $"{(isVolatile == null ? string.Empty : isVolatile.Value ? "volatile " : string.Empty)}" +

@@ -47,6 +47,13 @@
                 else accumulatedText += $"{TAB}{TAB}{CurrentClass}()\n\t\t" + "{\n\t\t\t//initializing object of type " + CurrentClass + " here\n\t\t}"; // no parameters
             }
 
+            if (root.Name == "method")
+            {
+                if (root.HasChildNodes)
+                    accumulatedText = new CodeGeneration.MethodsGenerator(root.Attributes, root.FirstChild).Parse();
+                else accumulatedText = new CodeGeneration.MethodsGenerator(root.Attributes).Parse();
+            }
+
             lastNodeVisited = root.Name;
 
             return accumulatedText;

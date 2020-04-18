@@ -49,6 +49,9 @@
                 CurrentClass = root.Attributes["name"].Value;
             }
 
+            if (root.Name == "field")
+                accumulatedText = new CodeGeneration.FieldGenerator(root.Attributes).Parse();
+
             if (root.Name == "property")
                 accumulatedText = new CodeGeneration.PropertyGenerator(root.Attributes).Parse();
 

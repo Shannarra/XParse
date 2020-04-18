@@ -13,6 +13,10 @@ namespace TestNamespace
 	class MyClass : Doc, IEnumerable
 	{
 	
+		private string myName  = "Shannarra";
+	
+		private uint myAge  = 69;
+	
 		///<summary>
 		/// This is my static property
 		///</summary>

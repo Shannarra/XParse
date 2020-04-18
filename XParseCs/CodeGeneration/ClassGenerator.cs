@@ -2,7 +2,9 @@
 
 namespace XParseCs.CodeGeneration
 {
-
+    /// <summary>
+    /// Generates a class' header line + all it's inheritance list
+    /// </summary>
     class ClassGenerator : ICodeGenerator
     {
         /// <summary>

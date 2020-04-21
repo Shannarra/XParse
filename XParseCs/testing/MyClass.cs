@@ -13,7 +13,7 @@ namespace TestNamespace
 	class MyClass : Doc, IEnumerable
 	{
 	
-		private string myName  = "Shannarra";
+		private volatile string myName  = "Shannarra";
 	
 		private uint myAge  = 69;
 	
@@ -26,6 +26,11 @@ namespace TestNamespace
 		/// This is my accessor property
 		///</summary>
 		public uint MyAge { get => myAge; set => myAge = value; }
+	
+		///<summary>
+		/// This is my accessor property
+		///</summary>
+		public string MyName { get => myName; set => myName = value; }
 	
 		///<summary>
 		/// Creates a new MyClass object

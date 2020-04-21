@@ -85,8 +85,5 @@ namespace XParseCs.CodeGeneration
                 $"{name} " +
                 "{" + $"{(get == null ? " " : $" {get} ")}get{(linkTo == null ? string.Empty : $" => {linkTo}")};" + //the getter
                 $"{(set == null ? " ": set + " ")}" + $"set{(linkTo == null ? string.Empty : $" => {linkTo} = value")}" + "; }"; //the setter
-
-        string s;
-        public string A { get => s; private set => s = value; }
     }
 }

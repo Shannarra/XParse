@@ -10,6 +10,13 @@
         /// </summary>
         private static string lastNodeVisited;
 
+        private static uint namespacesCount;
+
+        /// <summary>
+        /// Counter for all the classes in the current namespace
+        /// </summary>
+        private static uint classesCount;
+
         public static readonly string TAB = "\t";
 
         /// <summary>
@@ -30,12 +37,26 @@
             if (root.Name == "namespace")
                 if (root.Attributes["name"] == null)
                     throw new XParseException("The given namespace has no name!");
-                else accumulatedText = $"namespace {root.Attributes["name"].Value}" + "\n{";
+                else
+                {
+                    string name = root.Attributes["name"].Value, braces = "\t}\n}";
+                    accumulatedText = $"namespace {name}" + "\n{";
+                    classesCount = 0;
 
+                    if (namespacesCount > 0)
+                        accumulatedText = $"{braces}\n\nnamespace {name}" + "\n{";
+
+                    namespacesCount++;
+                }
             if (lastNodeVisited == "namespace") // start a #region
                 accumulatedText = $"{TAB}#region Dependencies";
-            if (root.Name == "class") // all "using" directives MUST be b4 class' start.
+            if (root.Name == "class" && classesCount == 0) // all "using" directives MUST be b4 class' start.
+            {
                 accumulatedText = $"{TAB}#endregion Dependencies\n";
+                classesCount++;
+            }
+            else if (classesCount > 0) // close the class's brace
+                accumulatedText = $"{TAB}{'}'}\n";
 
             if (root.Name == "ref")
                 accumulatedText = new CodeGeneration.DepedenciesGenerator(

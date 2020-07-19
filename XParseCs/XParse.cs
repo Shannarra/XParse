@@ -6,6 +6,16 @@
         /// The specified argument codeRoot="" in the file. The starting point of the program.
         /// </summary>
         private readonly string codeRoot;
+
+        private readonly string language;
+
+        private readonly string configCodeRoot;
+
+        private readonly string mainStructure;
+
+        private readonly bool multipleRoots;
+
+        private readonly bool multipleMains;
         
         /// <summary>
         /// The given .xparse file.
@@ -19,11 +29,18 @@
 
         private const string path = @"..\..\..\testing\test.xparse";
 
+        private const string configPath = @"..\..\..\XParse.config";
+
         public static string TAB = "\t";
 
 #nullable enable
         public static void Main(string[]? args)
         {
+#if DEBUG
+            document = new System.Xml.XmlDocument();
+
+            new XParse();
+#else
             if (args == null || args.Length == 0)
             {
                 document = new System.Xml.XmlDocument();
@@ -31,6 +48,7 @@
                 new XParse();
             }
             else { } // we'll parse cli args later
+#endif
         }
 
         XParse()
@@ -53,6 +71,25 @@
                 System.Console.WriteLine("No XML found in the current file");
             }
 
+            System.Xml.XmlDocument config = new System.Xml.XmlDocument();
+
+            if (System.IO.File.Exists(configPath))
+                config.Load(configPath);
+
+            System.Xml.XmlNode langNode = config.LastChild.FirstChild;
+
+            this.language = langNode.Attributes["name"].Value;
+            this.configCodeRoot = langNode.Attributes["codeRoot"].Value;
+            this.multipleRoots = langNode.Attributes["allowMultipleRoots"].Value.ToLower() == "true";
+            this.mainStructure = langNode.Attributes["mainStruct"].Value;
+            this.multipleMains = langNode.Attributes["allowMultipleMains"].Value.ToLower() == "true";
+            
+            if (document.GetElementsByTagName(this.mainStructure).Count > 1 && !this.multipleMains)
+                throw new XParseConfigException($"{this.mainStructure}es in this language MUST be in different files. Please read the .config file for more info.");
+            if (document.GetElementsByTagName(this.configCodeRoot).Count > 1 && !this.multipleRoots)
+                throw new XParseConfigException($"{this.configCodeRoot}es in this language MUST be in different files. Please read the .config file for more info.");
+
+
             if (document.GetElementsByTagName("content") == null ||
                 document.GetElementsByTagName("content")[0].ChildNodes[0].Name != "meta")
                 throw new XParseException("No \"META\" tag found.");
@@ -61,8 +98,10 @@
                 System.Xml.XmlNode meta = document.GetElementsByTagName("content")[0].ChildNodes[0];
                 codeRoot = meta.Attributes["codeRoot"].Value;
 
-                if (document.GetElementsByTagName(codeRoot)[0] == null)
+                if (meta.Attributes["codeRoot"].Value == null)
                     throw new XParseException("The meta code root specified is invalid.");
+                else if (codeRoot != configCodeRoot || meta.Attributes["language"].Value.ToLower() != this.language.ToLower())
+                    throw new XParseException("The meta of the parsed file DIFFERS from the .config file.");
                 else
                 {
                     xmlContent = new System.Collections.Specialized.StringCollection();
@@ -70,12 +109,14 @@
 
                     xmlContent.Add("\n\t}\n}");
 
-                    if (!System.IO.File.Exists(@"..\..\..\testing\MyClass.cs"))
-                        System.IO.File.Create(@"..\..\..\testing\MyClass.cs");
+                    string __filename = document.GetElementsByTagName("class")[0].Attributes["name"].Value;
+
+                    if (!System.IO.File.Exists($@"..\..\..\testing\{__filename}.cs"))
+                        System.IO.File.Create($@"..\..\..\testing\{__filename}.cs");
 
                     try
                     {
-                        using var writer = new System.IO.StreamWriter(@"..\..\..\testing\MyClass.cs");
+                        using var writer = new System.IO.StreamWriter($@"..\..\..\testing\{__filename}.cs");
                         foreach (var item in xmlContent)
                             writer.WriteLine(item);
                     }
@@ -109,33 +150,5 @@
             if (root.NextSibling != null)
                 ParseXml(root.NextSibling);
         }
-    }
-
-    /// <summary>
-    /// A generic <see cref="Exception"/> that throws when XParse encounter unexpected use of the XML formated file.
-    /// </summary>
-    [System.Serializable]
-    public class XParseException : System.Exception
-    {
-        public XParseException() { }
-        public XParseException(string message) : base(message) { }
-        public XParseException(string message, System.Exception inner) : base(message, inner) { }
-        protected XParseException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
-    }
-
-    /// <summary>
-    /// Special <see cref="Exception"/> that throws when a required XML argument could not be found (is null) or is empty.
-    /// </summary>
-    [System.Serializable]
-    public class XParseAttributeException : System.Exception
-    {
-        public XParseAttributeException() { }
-        public XParseAttributeException(string attributeName) : base($"The value of the attribute \"{attributeName}\" is null or invalid.") { }
-        public XParseAttributeException(string message, System.Exception inner) : base(message, inner) { }
-        protected XParseAttributeException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

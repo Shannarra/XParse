@@ -79,11 +79,37 @@
             if (root.Name == "ctor")
             {
                 //adding a summary by default for the constructor
+                
                 accumulatedText = $"\n\t\t///<summary>\n\t\t/// Creates a new {CurrentClass} object\n\t\t///</summarry>\n";
-                if (root.Attributes.Count > 0 && !string.IsNullOrEmpty(root.Attributes["params"].Value))
-                    accumulatedText += $"{TAB}{TAB}{CurrentClass}" +
-                        $"({(root.Attributes["params"].Value.Contains(',') ? root.Attributes["params"].Value.Split(',').Reduce(',') : root.Attributes["params"].Value)})\n\t\t" + "{\n\t\t\t//initializing object of type " + CurrentClass + " here\n\t\t}";
-                else accumulatedText += $"{TAB}{TAB}{CurrentClass}()\n\t\t" + "{\n\t\t\t//initializing object of type " + CurrentClass + " here\n\t\t}"; // no parameters
+                string ctorStart = "";
+                if (root.Attributes.Count > 0)
+                {
+                    if (!string.IsNullOrEmpty(root.Attributes["protection"].Value))
+                        ctorStart = root.Attributes["protection"].Value;
+
+                    ctorStart += $" {CurrentClass}";
+                    string[] cdata = new string[100];
+
+                    if (root.ChildNodes[0] is System.Xml.XmlCDataSection)
+                    {
+                        var data = root.ChildNodes[0] as System.Xml.XmlCDataSection;
+
+                        if (data.Value.Contains(';'))
+                        {
+                            cdata = data.Value.Split(';', System.StringSplitOptions.RemoveEmptyEntries);
+                            for (int i = 0; i < cdata.Length; i++)
+                                if (i < cdata.Length - 1)
+                                    cdata[i] += ";\n\t\t   ";
+                                else cdata[i] += ';';
+                        }
+                        else cdata = new string[] { data.Value };
+                    }
+
+                    if (!string.IsNullOrEmpty(root.Attributes["params"].Value))
+                        accumulatedText += $"{TAB}{TAB}" + ctorStart +
+                            $"({(root.Attributes["params"].Value.Contains(',') ? root.Attributes["params"].Value.Split(',').Reduce(',') : root.Attributes["params"].Value)})\n\t\t" + "{\n\t\t\t//initializing object of type " + CurrentClass + " here\n\t\t" + (cdata.Length > 0 ? "\t" + cdata.Reduce() + "\n\t\t" : "") + "}";
+                }
+                else accumulatedText += $"{(ctorStart == "" ? $"{TAB}{TAB}{CurrentClass}" : ctorStart)}()\n\t\t" + "{\n\t\t\t//initializing object of type " + CurrentClass + " here\n\t\t}"; // no parameters
             }
 
             if (root.Name == "method")

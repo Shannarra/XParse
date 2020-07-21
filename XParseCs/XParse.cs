@@ -7,6 +7,8 @@
         /// </summary>
         private readonly string codeRoot;
 
+        private readonly string fileExtension;
+
         private readonly string language;
 
         private readonly string configCodeRoot;
@@ -79,6 +81,7 @@
             System.Xml.XmlNode langNode = config.LastChild.FirstChild;
 
             this.language = langNode.Attributes["name"].Value;
+            this.fileExtension = langNode.Attributes["fileExtension"].Value;
             this.configCodeRoot = langNode.Attributes["codeRoot"].Value;
             this.multipleRoots = langNode.Attributes["allowMultipleRoots"].Value.ToLower() == "true";
             this.mainStructure = langNode.Attributes["mainStruct"].Value;
@@ -111,12 +114,12 @@
 
                     string __filename = document.GetElementsByTagName("class")[0].Attributes["name"].Value;
 
-                    if (!System.IO.File.Exists($@"..\..\..\testing\{__filename}.cs"))
-                        System.IO.File.Create($@"..\..\..\testing\{__filename}.cs");
+                    if (!System.IO.File.Exists($@"..\..\..\testing\{__filename}{fileExtension}"))
+                        System.IO.File.Create($@"..\..\..\testing\{__filename}{fileExtension}");
 
                     try
                     {
-                        using var writer = new System.IO.StreamWriter($@"..\..\..\testing\{__filename}.cs");
+                        using var writer = new System.IO.StreamWriter($@"..\..\..\testing\{__filename}{fileExtension}");
                         foreach (var item in xmlContent)
                             writer.WriteLine(item);
                     }
@@ -124,7 +127,7 @@
                     {
                         System.Console.WriteLine("The file to write in is not free at the moment. Please try again.");
                     }
-                    TestNamespace.MyClass.GreetMe(); // let's call our auto-generated code :)
+                    new TestNamespace.MyClass(1); // let's call our auto-generated code :)
                 }
             }
         }

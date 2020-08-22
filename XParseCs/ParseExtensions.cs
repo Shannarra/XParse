@@ -40,7 +40,7 @@
                 else
                 {
                     string name = root.Attributes["name"].Value, braces = "\t}\n}";
-                    accumulatedText = $"namespace {name}" + "\n{";
+                    accumulatedText = $"{(root.Attributes["summary"].Value == null ? "" : $"\n///<summary>\n/// {root.Attributes["summary"].Value}\n///</summary>\n")} namespace {name}" + "\n{";
                     classesCount = 0;
 
                     if (namespacesCount > 0)
@@ -82,7 +82,7 @@
                 
                 accumulatedText = $"\n\t\t///<summary>\n\t\t/// Creates a new {CurrentClass} object\n\t\t///</summarry>\n";
                 string ctorStart = "";
-                if (root.Attributes.Count > 0)
+                if (root.Attributes.Count > 0) // constructor with attributed
                 {
                     if (!string.IsNullOrEmpty(root.Attributes["protection"].Value))
                         ctorStart = root.Attributes["protection"].Value;
@@ -90,7 +90,7 @@
                     ctorStart += $" {CurrentClass}";
                     string[] cdata = new string[100];
 
-                    if (root.ChildNodes[0] is System.Xml.XmlCDataSection)
+                    if (root.ChildNodes[0] is System.Xml.XmlCDataSection) // read the CDATA section
                     {
                         var data = root.ChildNodes[0] as System.Xml.XmlCDataSection;
 

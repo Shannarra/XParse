@@ -1,4 +1,6 @@
-﻿namespace XParseCs
+﻿using System;
+
+namespace XParseCs
 {
     class XParse
     {
@@ -33,6 +35,8 @@
 
         private const string configPath = @"..\..\..\XParse.config";
 
+        private const string errorLogPath = @"..\..\..\errors.log";
+
         public static string TAB = "\t";
 
 #nullable enable
@@ -41,7 +45,21 @@
 #if DEBUG
             document = new System.Xml.XmlDocument();
 
-            new XParse();
+            try
+            {
+                new XParse();
+            }
+            catch (System.Exception e)
+            {
+                Console.WriteLine("An error was thrown. Please see the errors.log for more information");
+
+                if (!System.IO.File.Exists(errorLogPath))
+                    System.IO.File.Create(errorLogPath);
+                else
+                    using (System.IO.StreamWriter writer = new System.IO.StreamWriter(errorLogPath, true))
+                        writer.WriteLine($"[{e.Source} at {DateTime.Now}] {e.Message}");
+            }
+            
 #else
             if (args == null || args.Length == 0)
             {
@@ -88,9 +106,9 @@
             this.multipleMains = langNode.Attributes["allowMultipleMains"].Value.ToLower() == "true";
             
             if (document.GetElementsByTagName(this.mainStructure).Count > 1 && !this.multipleMains)
-                throw new XParseConfigException($"{this.mainStructure}es in this language MUST be in different files. Please read the .config file for more info.");
+                throw new XParseConfigException("Main structures in this language MUST be in different files. Please read the .config file for more info.");
             if (document.GetElementsByTagName(this.configCodeRoot).Count > 1 && !this.multipleRoots)
-                throw new XParseConfigException($"{this.configCodeRoot}es in this language MUST be in different files. Please read the .config file for more info.");
+                throw new XParseConfigException("Code roots in this language MUST be in different files. Please read the .config file for more info.");
 
 
             if (document.GetElementsByTagName("content") == null ||
